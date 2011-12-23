@@ -13,7 +13,9 @@ service('PUT',[Name]) ->
 service('DELETE',[Name]) ->
     {output,"ok"};
 service('GET',[Name,ItemName]) ->
-    {output, "service: " ++ Name ++ " Item: " ++ ItemName};
+    Service = hd(boss_db:find(service,[{name,'equals',Name}])),
+    Item = hd(boss_db:find(item,[{name,'equals',ItemName},{service_id,'equals',Service:id()}])),
+    {json, [{item,Item}]};
 service('PUT',[Name,ItemName]) ->
     Service = hd(boss_db:find(service,[{name,'equals',Name}])),
     Value = Req:post_param("value"),
