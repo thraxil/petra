@@ -30,5 +30,7 @@ service('PUT',[Name,ItemName]) ->
     {ok,SavedItem} = NewItem:save(),
     {json, [{item,SavedItem}]};
 service('DELETE',[Name,ItemName]) ->
+    Item = get_item(Name,ItemName),
+    boss_db:delete(Item:id()),
     {output, "ok"}.
     
