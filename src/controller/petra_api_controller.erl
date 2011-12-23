@@ -27,7 +27,6 @@ item_exists(ServiceName,ItemName) ->
     boss_db:count(item,[{name,'equals',ItemName},{service_id,'equals',Service:id()}]) > 0.
     
 %% main controller functions
-service('GET',[]) -> {output,"here"};
 service('GET',[Name]) ->
     Service = get_service(Name),
     {json,Service:display_data()};
