@@ -21,10 +21,13 @@ get_or_create_service(ServiceName) ->
 get_item(ServiceName,ItemName) ->
     Service = get_service(ServiceName),
     hd(boss_db:find(item,[{name,'equals',ItemName},{service_id,'equals',Service:id()}])).
+
+item_exists(ServiceName,ItemName) ->
+    Service = get_service(ServiceName),
+    boss_db:count(item,[{name,'equals',ItemName},{service_id,'equals',Service:id()}]) > 0.
     
 %% main controller functions
-service('GET',[]) ->
-    {output,"here"};
+service('GET',[]) -> {output,"here"};
 service('GET',[Name]) ->
     Service = get_service(Name),
     {json,Service:display_data()};
@@ -41,9 +44,17 @@ service('GET',[Name,ItemName]) ->
 service('PUT',[Name,ItemName]) ->
     {_Created,Service} = get_or_create_service(Name),
     Value = Req:post_param("value"),
-    NewItem = item:new(id,ItemName,Value,Service:id()),
-    {ok,SavedItem} = NewItem:save(),
-    {json, [{item,SavedItem}]};
+    case item_exists(Name,ItemName) of
+	true ->
+	    Item = get_item(Name,ItemName),
+	    Item:set([{value,Value}]),
+	    {ok,SavedItem} = Item:save(),
+	    {json, [{status,"updated"},{item,SavedItem}]};
+	false ->
+	    NewItem = item:new(id,ItemName,Value,Service:id()),
+	    {ok,SavedItem} = NewItem:save(),
+	    {json, [{status,"created"},{item,SavedItem}]}
+    end;
 service('DELETE',[Name,ItemName]) ->
     Item = get_item(Name,ItemName),
     boss_db:delete(Item:id()),
