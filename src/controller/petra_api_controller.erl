@@ -13,12 +13,14 @@ service('GET',[]) ->
     {output,"here"};
 service('GET',[Name]) ->
     Service = get_service(Name),
-    {json,[{service,Service}]};
+    {json,Service:display_data()};
 service('PUT',[Name]) ->
     Service = service:new(id,Name),
     {ok,SavedService} = Service:save(),
     {json,[{service,SavedService}]};
 service('DELETE',[Name]) ->
+    Service = get_service(Name),
+    boss_db:delete(Service:id()),
     {output,"ok"};
 service('GET',[Name,ItemName]) ->
     Item = get_item(Name,ItemName),
