@@ -1,11 +1,19 @@
 -module(petra_api_controller,[Req]).
 -compile(export_all).
 
+get_service(ServiceName) ->
+    hd(boss_db:find(service,[{name,'equals',ServiceName}])).
+
+get_item(ServiceName,ItemName) ->
+    Service = get_service(ServiceName),
+    Item = hd(boss_db:find(item,[{name,'equals',ItemName},{service_id,'equals',Service:id()}])),
+    Item.
+
 service('GET',[]) ->
     {output,"here"};
 service('GET',[Name]) ->
-    Services = boss_db:find(service,[{name,'equals',Name}]),
-    {json,[{service,hd(Services)}]};
+    Service = get_service(Name),
+    {json,[{service,Service}]};
 service('PUT',[Name]) ->
     Service = service:new(id,Name),
     {ok,SavedService} = Service:save(),
@@ -13,11 +21,10 @@ service('PUT',[Name]) ->
 service('DELETE',[Name]) ->
     {output,"ok"};
 service('GET',[Name,ItemName]) ->
-    Service = hd(boss_db:find(service,[{name,'equals',Name}])),
-    Item = hd(boss_db:find(item,[{name,'equals',ItemName},{service_id,'equals',Service:id()}])),
+    Item = get_item(Name,ItemName),
     {json, [{item,Item}]};
 service('PUT',[Name,ItemName]) ->
-    Service = hd(boss_db:find(service,[{name,'equals',Name}])),
+    Service = get_service(Name),
     Value = Req:post_param("value"),
     NewItem = item:new(id,ItemName,Value,Service:id()),
     {ok,SavedItem} = NewItem:save(),
