@@ -24,7 +24,7 @@ service('DELETE',[Name]) ->
     {output,"ok"};
 service('GET',[Name,ItemName]) ->
     Item = get_item(Name,ItemName),
-    {json, [{item,Item}]};
+    {json, Item:display_data()};
 service('PUT',[Name,ItemName]) ->
     Service = get_service(Name),
     Value = Req:post_param("value"),
