@@ -6,8 +6,8 @@ get_service(ServiceName) ->
 
 get_item(ServiceName,ItemName) ->
     Service = get_service(ServiceName),
-    Item = hd(boss_db:find(item,[{name,'equals',ItemName},{service_id,'equals',Service:id()}])),
-    Item.
+    hd(boss_db:find(item,[{name,'equals',ItemName},{service_id,'equals',Service:id()}])).
+    
 
 service('GET',[]) ->
     {output,"here"};
