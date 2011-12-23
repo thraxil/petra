@@ -4,7 +4,8 @@
 service('GET',[]) ->
     {output,"here"};
 service('GET',[Name]) ->
-    {output,Name};
+    Services = boss_db:find(service,[{name,'equals',Name}]),
+    {json,[{service,hd(Services)}]};
 service('PUT',[Name]) ->
     Service = service:new(id,Name),
     {ok,SavedService} = Service:save(),
