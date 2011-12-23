@@ -5,14 +5,16 @@
 get_service(ServiceName) ->
     hd(boss_db:find(service,[{name,'equals',ServiceName}])).
 
+service_exists(ServiceName) ->
+    boss_db:count(service,[{name,'equals',ServiceName}]) > 0.
+
 get_or_create_service(ServiceName) ->
-    Count = boss_db:count(service,[{name,'equals',ServiceName}]),
-    if 
-	Count == 0 ->
+    case service_exists(ServiceName) of
+	false ->
 	    Service = service:new(id,ServiceName),
 	    {ok,SavedService} = Service:save(),
 	    {created,SavedService};
-	 Count > 0 ->
+	 true ->
 	    {exists,get_service(ServiceName)}
     end.
 
