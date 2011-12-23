@@ -25,8 +25,14 @@ get_item(ServiceName,ItemName) ->
 item_exists(ServiceName,ItemName) ->
     Service = get_service(ServiceName),
     boss_db:count(item,[{name,'equals',ItemName},{service_id,'equals',Service:id()}]) > 0.
+
+%% handle "/"    
+index('GET',[]) ->
+    Services = boss_db:find(service,[]),
+    {json,[{services,Services}]}.
+
     
-%% main controller functions
+%% service level controller functions
 service('GET',[Name]) ->
     Service = get_service(Name),
     {json,Service:display_data()};
@@ -37,6 +43,8 @@ service('DELETE',[Name]) ->
     Service = get_service(Name),
     boss_db:delete(Service:id()),
     {output,"ok"};
+
+%% item level controller functions
 service('GET',[Name,ItemName]) ->
     Item = get_item(Name,ItemName),
     {json, Item:display_data()};
@@ -59,7 +67,3 @@ service('DELETE',[Name,ItemName]) ->
     boss_db:delete(Item:id()),
     {output, "ok"}.
 
-%% an odd one out to handle "/"    
-index('GET',[]) ->
-    Services = boss_db:find(service,[]),
-    {json,[{services,Services}]}.
