@@ -39,7 +39,7 @@ service('GET',[Name,ItemName]) ->
     Item = get_item(Name,ItemName),
     {json, Item:display_data()};
 service('PUT',[Name,ItemName]) ->
-    Service = get_service(Name),
+    {_Created,Service} = get_or_create_service(Name),
     Value = Req:post_param("value"),
     NewItem = item:new(id,ItemName,Value,Service:id()),
     {ok,SavedItem} = NewItem:save(),
