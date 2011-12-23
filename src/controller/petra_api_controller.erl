@@ -36,3 +36,6 @@ service('DELETE',[Name,ItemName]) ->
     boss_db:delete(Item:id()),
     {output, "ok"}.
     
+index('GET',[]) ->
+    Services = boss_db:find(service,[]),
+    {json,[{services,Services}]}.
