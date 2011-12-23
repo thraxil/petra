@@ -4,4 +4,4 @@
 -has({items, many}).
 
 display_data() ->
-    [{name,Name},{items,THIS:items()}].
+    [{name,Name},{items,[Item:display_data() || Item <- THIS:items()]}].
