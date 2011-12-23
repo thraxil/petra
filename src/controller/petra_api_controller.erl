@@ -15,7 +15,11 @@ service('DELETE',[Name]) ->
 service('GET',[Name,ItemName]) ->
     {output, "service: " ++ Name ++ " Item: " ++ ItemName};
 service('PUT',[Name,ItemName]) ->
-    {output, "ok"};
+    Service = hd(boss_db:find(service,[{name,'equals',Name}])),
+    Value = Req:post_param("value"),
+    NewItem = item:new(id,ItemName,Value,Service:id()),
+    {ok,SavedItem} = NewItem:save(),
+    {json, [{item,SavedItem}]};
 service('DELETE',[Name,ItemName]) ->
     {output, "ok"}.
     
